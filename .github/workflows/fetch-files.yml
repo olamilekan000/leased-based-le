@@ -1,0 +1,23 @@
+name: Notify dump repo on Tag Push
+
+on:
+  push:
+    tags:
+      - "v*" # Triggers on any tag starting with 'v'
+
+jobs:
+  notify_repo_b:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger drump-crds Workflow
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.PAT }} # Use PAT instead of GITHUB_TOKEN
+          repository: olamilekan000/drump-crds # Repo B
+          event-type: tag-pushed
+          client-payload: |
+            {
+              "tag": "${{ github.ref }}",
+              "commit_sha": "${{ github.sha }}"
+            }
