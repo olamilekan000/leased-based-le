@@ -10,14 +10,53 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Trigger drump-crds Workflow
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          token: ${{ secrets.PAT }} # Use PAT instead of GITHUB_TOKEN
-          repository: olamilekan000/dump-crds # Repo B
-          event-type: tag-pushed
-          client-payload: |
-            {
-              "tag": "${{ github.ref }}",
-              "commit_sha": "${{ github.sha }}"
-            }
+      - name: Get tag from event
+        id: extract_tag
+        run: |
+          TAG=${{ github.ref }}
+          TAG=${TAG#refs/tags/}
+          echo "TAG=${TAG}" >> $GITHUB_ENV
+          echo "Extracted tag: ${TAG}"
+
+      - name: Checkout dump-crds repository 
+        uses: actions/checkout@v3 
+        with: 
+          repository: olamilekan000/dump-crds
+          token: ${{ secrets.PAT }}
+
+      - name: Create and checkout new branch
+        run: |
+          git checkout -b release-${{ env.TAG }}
+
+      - name: Create a directory for the tag
+        run: |
+          mkdir -p releases/download/${{ env.TAG }}
+
+      - name: Copy CRDs to the tag directory
+        run: |
+          cp -r $GITHUB_WORKSPACE/crd/* releases/download/${{ env.TAG }}/
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add .
+          git commit -m "Add CRDs for version ${{ env.TAG }}"
+          git push origin release-${{ env.TAG }}
+
+
+
+       
+
+    # steps:
+    #   - name: Trigger drump-crds Workflow
+    #     uses: peter-evans/repository-dispatch@v2
+    #     with:
+    #       token: ${{ secrets.PAT }} # Use PAT instead of GITHUB_TOKEN
+    #       repository: olamilekan000/dump-crds # Repo B
+    #       event-type: tag-pushed
+    #       client-payload: |
+    #         {
+    #           "tag": "${{ github.ref }}",
+    #           "commit_sha": "${{ github.sha }}"
+    #         }
