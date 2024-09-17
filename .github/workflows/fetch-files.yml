@@ -14,9 +14,12 @@ jobs:
         id: extract_tag
         run: |
           TAG=${{ github.ref }}
-          TAG=${TAG#refs/tags/}
+          TAG=${TAG#refs/tags/}}
           echo "TAG=${TAG}" >> $GITHUB_ENV
           echo "Extracted tag: ${TAG}"
+
+      - name: Store original repository path
+        run: echo "ORIGINAL_REPO_PATH=${{ github.workspace }}" >> $GITHUB_ENV
 
       - name: Checkout dump-crds repository 
         uses: actions/checkout@v3 
@@ -31,15 +34,11 @@ jobs:
       - name: Create a directory for the tag
         run: |
           mkdir -p releases/download/${{ env.TAG }}
-          ls
-
-      - name: List workspace directories
-        run: |
-          ls -R $GITHUB_WORKSPACE          
+          ls     
 
       - name: Copy CRDs to the tag directory
         run: |
-          cp -r ${{ github.workspace }}/crd/* releases/download/${{ env.TAG }}/
+          cp -r ${{ env.ORIGINAL_REPO_PATH }}/crd/* releases/download/${{ env.TAG }}/
 
       - name: Commit and push changes
         run: |
@@ -48,20 +47,3 @@ jobs:
           git add .
           git commit -m "Add CRDs for version ${{ env.TAG }}"
           git push origin release-${{ env.TAG }}
-
-
-
-       
-
-    # steps:
-    #   - name: Trigger drump-crds Workflow
-    #     uses: peter-evans/repository-dispatch@v2
-    #     with:
-    #       token: ${{ secrets.PAT }} # Use PAT instead of GITHUB_TOKEN
-    #       repository: olamilekan000/dump-crds # Repo B
-    #       event-type: tag-pushed
-    #       client-payload: |
-    #         {
-    #           "tag": "${{ github.ref }}",
-    #           "commit_sha": "${{ github.sha }}"
-    #         }
