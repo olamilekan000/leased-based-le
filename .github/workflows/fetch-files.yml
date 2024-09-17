@@ -30,7 +30,7 @@ jobs:
           cp -r $GITHUB_WORKSPACE/crd/* /tmp/crds/
 
       - name: Upload CRDs as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: crds
           path: /tmp/crds
@@ -48,6 +48,10 @@ jobs:
       - name: Create a directory for the tag
         run: |
           mkdir -p releases/download/${{ env.TAG }}
+
+      - name: List file
+        run: |
+          ls      
 
       - name: Download CRDs artifact directly into the tag directory
         uses: actions/download-artifact@v4
