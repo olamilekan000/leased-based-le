@@ -33,9 +33,13 @@ jobs:
           mkdir -p releases/download/${{ env.TAG }}
           ls
 
+      - name: List workspace directories
+        run: |
+          ls -R $GITHUB_WORKSPACE          
+
       - name: Copy CRDs to the tag directory
         run: |
-          cp -r ./crd/* releases/download/${{ env.TAG }}/
+          cp -r ${{ github.workspace }}/crd/* releases/download/${{ env.TAG }}/
 
       - name: Commit and push changes
         run: |
