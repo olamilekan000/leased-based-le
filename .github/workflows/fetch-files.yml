@@ -47,11 +47,7 @@ jobs:
 
       - name: Create a directory for the tag
         run: |
-          mkdir -p releases/download/${{ env.TAG }}
-
-      - name: List file
-        run: |
-          ls      
+          mkdir -p releases/download/${{ env.TAG }}  
 
       - name: Download CRDs artifact directly into the tag directory
         uses: actions/download-artifact@v4
