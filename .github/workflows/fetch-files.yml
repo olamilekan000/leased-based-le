@@ -10,22 +10,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout leased-based-le repository
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.repository }}
+          token: ${{ secrets.PAT }}
+
       - name: Get tag from event
         id: extract_tag
         run: |
           TAG=${{ github.ref }}
-          TAG=${TAG#refs/tags/}}
+          TAG=${TAG#refs/tags/}
           echo "TAG=${TAG}" >> $GITHUB_ENV
           echo "Extracted tag: ${TAG}"
 
-      - name: Store original repository path
-        run: echo "ORIGINAL_REPO_PATH=${{ github.workspace }}" >> $GITHUB_ENV
+      - name: Copy CRDs to a temporary directory
+        run: |
+          mkdir -p /tmp/crds
+          cp -r $GITHUB_WORKSPACE/crd/* /tmp/crds/
+
+      - name: Upload CRDs as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: crds
+          path: /tmp/crds
 
       - name: Checkout dump-crds repository 
-        uses: actions/checkout@v3 
+        uses: actions/checkout@v3
         with: 
           repository: olamilekan000/dump-crds
           token: ${{ secrets.PAT }}
+
+      - name: Download CRDs artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: crds
 
       - name: Create and checkout new branch
         run: |
@@ -34,11 +53,11 @@ jobs:
       - name: Create a directory for the tag
         run: |
           mkdir -p releases/download/${{ env.TAG }}
-          ls     
+          ls
 
-      - name: Copy CRDs to the tag directory
+      - name: Copy CRDs from the artifact to the tag directory
         run: |
-          cp -r ${{ env.ORIGINAL_REPO_PATH }}/crd/* releases/download/${{ env.TAG }}/
+          cp -r crds/* releases/download/${{ env.TAG }}/
 
       - name: Commit and push changes
         run: |
