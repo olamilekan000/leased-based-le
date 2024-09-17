@@ -34,7 +34,7 @@ jobs:
 
       - name: Copy CRDs to the tag directory
         run: |
-          cp -r $GITHUB_WORKSPACE/crd/* releases/download/${{ env.TAG }}/
+          cp -r ${{ github.workspace }}/crd/* releases/download/${{ env.TAG }}/
 
       - name: Commit and push changes
         run: |
