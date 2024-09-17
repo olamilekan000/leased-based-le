@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout leased-based-le repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.repository }}
           token: ${{ secrets.PAT }}
@@ -36,28 +36,24 @@ jobs:
           path: /tmp/crds
 
       - name: Checkout dump-crds repository 
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with: 
           repository: olamilekan000/dump-crds
           token: ${{ secrets.PAT }}
 
-      - name: Download CRDs artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: crds
-
       - name: Create and checkout new branch
         run: |
-          git checkout -b release-${{ env.TAG }}
+          git checkout -b release-${{ env.TAG }}          
 
       - name: Create a directory for the tag
         run: |
           mkdir -p releases/download/${{ env.TAG }}
-          ls
 
-      - name: Copy CRDs from the artifact to the tag directory
-        run: |
-          cp -r crds/* releases/download/${{ env.TAG }}/
+      - name: Download CRDs artifact directly into the tag directory
+        uses: actions/download-artifact@v4
+        with:
+          name: crds
+          path: releases/download/${{ env.TAG }}
 
       - name: Commit and push changes
         run: |
