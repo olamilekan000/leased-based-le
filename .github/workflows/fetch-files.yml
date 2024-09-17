@@ -3,7 +3,7 @@ name: Notify dump repo on Tag Push
 on:
   push:
     tags:
-      - "v*" # Triggers on any tag starting with 'v'
+      - "v[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
   notify_repo_b:
@@ -12,9 +12,6 @@ jobs:
     steps:
       - name: Checkout leased-based-le repository
         uses: actions/checkout@v4
-        with:
-          repository: ${{ github.repository }}
-          token: ${{ secrets.PAT }}
 
       - name: Get tag from event
         id: extract_tag
@@ -60,5 +57,5 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add .
-          git commit -m "Add CRDs for version ${{ env.TAG }}"
+          git commit -m "add CRDs for version ${{ env.TAG }}"
           git push origin release-${{ env.TAG }}
