@@ -24,7 +24,9 @@ jobs:
       - name: Copy CRDs to a temporary directory
         run: |
           mkdir -p /tmp/crds
+          mkdir -p /tmp/k8s
           cp -r $GITHUB_WORKSPACE/crd/* /tmp/crds/
+          cp -r $GITHUB_WORKSPACE/k8s/* /tmp/k8s/
 
       - name: Upload CRDs as artifact
         uses: actions/upload-artifact@v4
