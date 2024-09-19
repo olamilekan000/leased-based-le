@@ -18,7 +18,7 @@ jobs:
         run: |
           TAG=${{ github.ref }}
           TAG=${TAG#refs/tags/}
-          echo "TAG=${TAG}" >> $GITHUB_ENV
+          echo "TAG=${TAG}" >> "$GITHUB_ENV"
           echo "Extracted tag: ${TAG}"
 
       - name: Copy CRDs to a temporary directory
