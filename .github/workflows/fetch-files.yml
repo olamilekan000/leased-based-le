@@ -32,6 +32,12 @@ jobs:
           name: crds
           path: /tmp/crds
 
+      - name: Upload k8s as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: k8s
+          path: /tmp/k8s          
+
       - name: Checkout dump-crds repository 
         uses: actions/checkout@v4
         with: 
@@ -44,13 +50,20 @@ jobs:
 
       - name: Create a directory for the tag
         run: |
-          mkdir -p releases/download/${{ env.TAG }}  
+          mkdir -p releases/download/${{ env.TAG }} 
+          mkdir k8s
 
       - name: Download CRDs artifact directly into the tag directory
         uses: actions/download-artifact@v4
         with:
           name: crds
           path: releases/download/${{ env.TAG }}
+
+      - name: Download k8s artifact directly into the tag directory
+        uses: actions/download-artifact@v4
+        with:
+          name: k8s
+          path: k8s         
 
       - name: Commit and push changes
         run: |
