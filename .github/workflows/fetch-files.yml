@@ -68,6 +68,7 @@ jobs:
 
       - name: Create a release
         run: |
-          gh release create ${{ env.TAG }} releases/download/${{ env.TAG }}/* --title "Release ${{ env.TAG }}" --notes "Release notes for version ${{ env.TAG }}"
+          gh release create ${{ env.TAG }} releases/download/${{ env.TAG }}/crd.yaml \
+            --title "Release ${{ env.TAG }}" --notes "Release notes for version ${{ env.TAG }}"
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
