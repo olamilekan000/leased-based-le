@@ -18,27 +18,19 @@ jobs:
         run: |
           TAG=${{ github.ref }}
           TAG=${TAG#refs/tags/}
-          echo "TAG=${TAG}" >> "$GITHUB_ENV"
+          echo "TAG=${TAG}" >> $GITHUB_ENV
           echo "Extracted tag: ${TAG}"
 
       - name: Copy CRDs to a temporary directory
         run: |
           mkdir -p /tmp/crds
-          mkdir -p /tmp/k8s
           cp -r $GITHUB_WORKSPACE/crd/* /tmp/crds/
-          cp -r $GITHUB_WORKSPACE/k8s/* /tmp/k8s/
 
       - name: Upload CRDs as artifact
         uses: actions/upload-artifact@v4
         with:
           name: crds
           path: /tmp/crds
-
-      - name: Upload k8s as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: k8s
-          path: /tmp/k8s          
 
       - name: Checkout dump-crds repository 
         uses: actions/checkout@v4
@@ -52,20 +44,13 @@ jobs:
 
       - name: Create a directory for the tag
         run: |
-          mkdir -p releases/download/${{ env.TAG }} 
-          mkdir k8s
+          mkdir -p releases/download/${{ env.TAG }}  
 
       - name: Download CRDs artifact directly into the tag directory
         uses: actions/download-artifact@v4
         with:
           name: crds
           path: releases/download/${{ env.TAG }}
-
-      - name: Download k8s artifact directly into the tag directory
-        uses: actions/download-artifact@v4
-        with:
-          name: k8s
-          path: k8s         
 
       - name: Commit and push changes
         run: |
@@ -74,3 +59,15 @@ jobs:
           git add .
           git commit -m "add CRDs for version ${{ env.TAG }}"
           git push origin release-${{ env.TAG }}
+
+      - name: Create a pull request
+        run: |
+          gh pr create --base main --head release-${{ env.TAG }} --title "Add CRDs for version ${{ env.TAG }}" --body "This PR includes CRDs for version ${{ env.TAG }}."
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+
+      - name: Create a release
+        run: |
+          gh release create ${{ env.TAG }} releases/download/${{ env.TAG }}/* --title "Release ${{ env.TAG }}" --notes "Release notes for version ${{ env.TAG }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
