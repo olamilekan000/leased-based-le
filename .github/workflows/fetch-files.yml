@@ -75,9 +75,9 @@ jobs:
       - name: Replace Merged Yaml with all.yaml
         run: |
           mkdir -p releases/download/${{ env.TAG }}/template/
-          if [ -f merged.yaml ]; then
-            mv merged.yaml releases/download/${{ env.TAG }}/template/all.yaml
-            rm -rf merged.yaml
+          if [ -f all-merged.yaml ]; then
+            mv all-merged.yaml releases/download/${{ env.TAG }}/template/all.yaml
+            rm -rf all-merged.yaml
           else
             echo "merged.yaml not found, skipping."
           fi
