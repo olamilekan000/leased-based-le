@@ -32,6 +32,20 @@ jobs:
           name: crds
           path: /tmp/crds
 
+      - name: Merge Manifests with kustomize
+        run: |
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash  
+          mv kustomize /usr/local/bin
+          kustomize version
+          make merge 
+          ls
+
+      - name: Upload Merged Manifests file
+        uses: actions/upload-artifact@v4
+        with:
+          name: merged-manifests
+          path: ./all-merged.yaml     
+
       - name: Checkout dump-crds repository 
         uses: actions/checkout@v4
         with: 
