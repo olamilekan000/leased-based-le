@@ -95,9 +95,3 @@ jobs:
           gh pr create --base master --head release-${{ env.TAG }} --title "Add CRDs for version ${{ env.TAG }}" --body "This PR includes CRDs for version ${{ env.TAG }}."
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
-
-      - name: Create a release
-        run: |
-          gh release create ${{ env.TAG }} releases/download/${{ env.TAG }}/* --title "Release ${{ env.TAG }}" --notes "Release notes for version ${{ env.TAG }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
