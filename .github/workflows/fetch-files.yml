@@ -77,6 +77,7 @@ jobs:
           mkdir -p releases/download/${{ env.TAG }}/template/
           if [ -f merged.yaml ]; then
             mv merged.yaml releases/download/${{ env.TAG }}/template/all.yaml
+            rm -rf merged.yaml
           else
             echo "merged.yaml not found, skipping."
           fi
