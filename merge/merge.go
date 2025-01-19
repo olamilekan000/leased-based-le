@@ -25,6 +25,15 @@ func main() {
 
 	filePath := filepath.Join(dir, "charts-all.yaml")
 
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		if _, err := os.Stdout.Write(prehelmOutput); err != nil {
+			fmt.Fprintln(os.Stderr, "Failed to write merged YAML to stdout:", err)
+			os.Exit(1)
+		}
+
+		os.Exit(0)
+	}
+
 	file, err := os.Open(filePath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Failed to open charts-all.yaml:", err)
